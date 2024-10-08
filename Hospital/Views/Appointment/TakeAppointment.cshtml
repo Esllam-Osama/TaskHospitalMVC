@@ -1,0 +1,144 @@
+﻿@{
+    ViewData["title"] = "Take Appointment";
+}
+<div class="w-100">
+    <div class="w-50 mx-auto rounded-5 mt-4 position-relative">
+        <div class="rounded-5 w-100 z-3">
+            <div class="alert text-center mb-0 w-75 pb-0 mx-auto bg-opacity-10 mt-2">
+                <h2>Complete Appointment with <span class="fw-bold">@Model.drName</span></h2>
+                <hr class="w-50 mx-auto fw-bold border-3" />
+            </div>
+            <form id="appointmentForm" action="/Appointment/Insert" class="position-relative z-3 w-75 mx-auto" method="post">
+                <input type="hidden" name="DoctorId" value="@Model.drId" />
+                <div class="mb-2">
+                    <label class="form-label mb-0 fw-bold">Your Name: </label>
+                    <input type="text" name="PatientName" required class="form-control" value="" />
+                </div>
+                <div class="mb-2">
+                    <label class="form-label mb-0 fw-bold">Date: </label>
+                    <input type="date" name="date" required min="@DateTime.Now.ToString("yyyy-MM-dd")" class="form-control" value="" />
+                </div>
+                <div class="mb-2">
+                    <label class="form-label mb-0 fw-bold">Time: </label>
+                    <input type="time" name="time" required class="form-control" value="" />
+                </div>
+                <hr class="w-75 mx-auto fw-bold border" />
+                <div class="pt-3 pb-2 text-center">
+                    <button type="button" class="btn btn-outline-light fw-bold" id="submitBtn">
+                        Submit
+                    </button>
+                    <p class="fw-medium mt-2" style="font-size:13px;">or</p>
+                    <a href="/Appointment" class="btn btn-outline-secondary fw-bold">Return</a>
+                </div>
+            </form>
+            <div class="bg-img rounded-5"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal text-dark fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmationModalLabel">Confirmation</h5>
+            </div>
+            <div class="modal-body">
+                Are u sure?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="confirmSubmit">yes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style scoped>
+    .bg-img {
+        background-image: url('@Url.Content("~/background.jpg")') !important;
+        position: absolute;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        left: 0;
+        z-index: 1;
+        box-shadow: 0px 0px 40px white;
+    }
+
+        .bg-img::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #000000b6;
+            z-index: 2;
+            border-radius: 1.95rem;
+        }
+
+    .form-control {
+        background: none;
+        color: white;
+        font-weight: bold;
+    }
+
+        .form-control:focus {
+            background: none;
+            font-weight: bold;
+            color: white;
+        }
+
+    .text-center {
+        position: relative;
+        z-index: 3;
+    }
+</style>
+
+<script>
+    document.querySelector('input[name="date"]').addEventListener('change', function () {
+        const dateInput = this.value;
+        const today = new Date().toISOString().split('T')[0];
+
+        if (dateInput === today) {
+            const currentTime = new Date().toLocaleTimeString('it-IT', { hour12: false });
+            document.querySelector('input[name="time"]').setAttribute('min', currentTime);
+        } else {
+            document.querySelector('input[name="time"]').removeAttribute('min');
+        }
+    });
+
+    document.getElementById('submitBtn').addEventListener('click', function () {
+        const dateInput = document.querySelector('input[name="date"]').value;
+        const timeInput = document.querySelector('input[name="time"]').value;
+
+        // إذا لم يتم إدخال التاريخ أو الوقت
+        if (!dateInput || !timeInput) {
+            alert('Please select both date and time.');
+            return;
+        }
+
+        const today = new Date();
+        const selectedDateTime = new Date(`${dateInput}T${timeInput}`);
+
+        // إزالة الأجزاء التي تقارن اليوم فقط وتحقق من التاريخ والوقت معًا
+        if (selectedDateTime < today) {
+            alert('You cannot select a past date or time.');
+            return;
+        }
+
+        // إذا كان التحقق صحيح، يعرض الـ modal
+        var confirmationModal = new bootstrap.Modal(document.getElementById('confirmationModal'));
+        confirmationModal.show();
+    });
+
+
+
+    // Handle the confirmation modal submit
+    document.getElementById('confirmSubmit').addEventListener('click', function () {
+        document.getElementById('appointmentForm').submit();
+    });
+</script>

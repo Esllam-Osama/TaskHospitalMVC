@@ -1,0 +1,86 @@
+﻿@{
+    ViewData["title"] = "All Appointments";
+}
+<div class="container">
+    <div class="alert alert-warning text-center w-50 mx-auto">
+        <h2 class="fw-bold">↓..All Apointments..↓</h2>
+    </div>
+    <div class="mt-4">
+        <table class="table border rounded-5 table-striped text-center">
+            <thead>
+                <tr>
+                    <th>Patient Name</th>
+                    <th>Dr.Name</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Actions</th>
+                </tr> 
+            </thead>
+            <tbody>
+                @foreach(var a in Model){
+                    <tr>
+                        <td class="fw-medium">
+                            @a.PatientName
+                        </td>
+                        <td>
+                            @a.DrName
+                        </td>
+                        <td>
+                            @a.Date
+                        </td>
+                        <td>
+                            @a.Time
+                        </td>
+                        <td >
+                            <a href="/Appointment/Edit?appointmentId=@a.Id" class="btn btn-warning fw-medium"><i class="fa-regular fa-pen-to-square"></i> Eddit</a>
+                            <a href="#" class="btn btn-danger fw-medium ms-3" data-bs-toggle="modal" data-bs-target="#exampleModal" data-appointment-id="@a.Id">
+                                <i class="fa-solid fa-trash-can"></i> Delete
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title text-dark fs-5" id="exampleModalLabel">Confirmation</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-dark">
+                Are you sure you want to delete this appointment?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                <button type="button" class="btn btn-danger" id="confirmDelete">Yes</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    // حفظ الـ appointmentId عند فتح الـ modal
+    var appointmentIdToDelete;
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var deleteButtons = document.querySelectorAll('a[data-bs-toggle="modal"]');
+
+        deleteButtons.forEach(function (button) {
+            button.addEventListener('click', function () {
+                // تخزين الـ appointmentId من البيانات المخزنة
+                appointmentIdToDelete = this.getAttribute('data-appointment-id');
+            });
+        });
+    });
+
+    // تنفيذ عملية الحذف عند تأكيد الحذف
+    document.getElementById('confirmDelete').addEventListener('click', function () {
+        // توجيه المستخدم إلى رابط الحذف
+        window.location.href = '/Appointment/Delete?appointmentId=' + appointmentIdToDelete;
+    });
+
+</script>
